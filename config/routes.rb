@@ -12,6 +12,7 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+  root "devise/sessions#new"
 
   namespace :api, defaults: { format: :json } do
     namespace :v1 do
