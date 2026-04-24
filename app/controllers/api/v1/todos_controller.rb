@@ -4,60 +4,57 @@ module Api
       before_action :authenticate_user!
       before_action :set_todo, only: %i[ show edit update destroy ]
 
-      # GET /todos or /todos.json
+      # GET /todos
       def index
-        @todos = Todo.all
+        render json: Todo.all
       end
 
-      # GET /todos/1 or /todos/1.json
+      # GET /todos/1
       def show
+        render json: @todo
       end
 
       # GET /todos/new
       def new
-        @todo = Todo.new
+        render json: Todo.new
       end
 
       # GET /todos/1/edit
       def edit
+        render json: @todo
       end
 
-      # POST /todos or /todos.json
+      # POST /todos
       def create
         @todo = Todo.new(todo_params)
 
-        respond_to do |format|
-          if @todo.save
-            format.html { redirect_to @todo, notice: "Todo was successfully created." }
-            format.json { render :show, status: :created, location: @todo }
-          else
-            format.html { render :new, status: :unprocessable_entity }
-            format.json { render json: @todo.errors, status: :unprocessable_entity }
-          end
+        if @todo.save
+          render json: @todo, status: :created
+        else
+          render json: @todo.errors, status: :unprocessable_entity
         end
       end
 
-      # PATCH/PUT /todos/1 or /todos/1.json
+      # PATCH/PUT /todos/1
       def update
-        respond_to do |format|
-          if @todo.update(todo_params)
-            format.html { redirect_to @todo, notice: "Todo was successfully updated.", status: :see_other }
-            format.json { render :show, status: :ok, location: @todo }
-          else
-            format.html { render :edit, status: :unprocessable_entity }
-            format.json { render json: @todo.errors, status: :unprocessable_entity }
-          end
+        if @todo.update(todo_params)
+          render json: @todo, status: :ok
+        else
+          render json: @todo.errors, status: :unprocessable_entity
         end
       end
 
-      # DELETE /todos/1 or /todos/1.json
+      # DELETE /todos/1
       def destroy
         @todo.destroy!
 
-        respond_to do |format|
-          format.html { redirect_to todos_path, notice: "Todo was successfully destroyed.", status: :see_other }
-          format.json { head :no_content }
-        end
+        render json: {
+          resource: "Todo",
+          id: @todo.id,
+          message: "This record was successfully deleted."
+        }
+      rescue ActiveRecord::RecordNotDestroyed => e
+        render json: e
       end
 
       private
