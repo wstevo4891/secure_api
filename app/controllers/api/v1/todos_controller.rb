@@ -54,7 +54,7 @@ module Api
           message: "This record was successfully deleted."
         }
       rescue ActiveRecord::RecordNotDestroyed => e
-        render json: e
+        render json: e, status: :internal_server_error
       end
 
       private
